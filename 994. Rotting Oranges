@@ -1,0 +1,118 @@
+https://leetcode.com/problems/rotting-oranges/
+994. Rotting Oranges
+
+You are given an m x n grid where each cell can have one of three values:
+
+0 representing an empty cell,
+1 representing a fresh orange, or
+2 representing a rotten orange.
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+
+ 
+
+Example 1:
+
+
+Input: grid = [[2,1,1],[1,1,0],[0,1,1]]
+Output: 4
+Example 2:
+
+Input: grid = [[2,1,1],[0,1,1],[1,0,1]]
+Output: -1
+Explanation: The orange in the bottom left corner (row 2, column 0) is never rotten, because rotting only happens 4-directionally.
+Example 3:
+
+Input: grid = [[0,2]]
+Output: 0
+Explanation: Since there are already no fresh oranges at minute 0, the answer is just 0.
+
+
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        int result = 0;
+        int nbOranges = 0;
+        Queue<Orange> queue = new LinkedList();
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        
+        for (int y = 0; y < grid.length; y++) {
+            for (int x = 0; x < grid[y].length; x++) {
+                if (grid[y][x] == 0) continue;
+                if (grid[y][x] == 2) {
+                    Orange o = new Orange();
+                    o.x = x;
+                    o.y = y;
+                    o.time = 0;
+                    queue.offer(o);
+                    visited[y][x] = true;
+                }
+                nbOranges++;
+            }
+        }
+        
+        while (!queue.isEmpty()) {
+            Orange current = queue.poll();
+            int x = current.x;
+            int y = current.y;
+            nbOranges--;
+            
+            if (current.time > result) {
+                result = current.time;
+            }
+            
+            if (isInBound(grid, x, y - 1) && !visited[y - 1][x] && grid[y - 1][x] == 1) {
+                Orange north = new Orange();
+                north.x = x;
+                north.y = y - 1;
+                north.time = current.time + 1;
+                queue.offer(north);
+                visited[y - 1][x] = true;
+                grid[y - 1][x] = 2;
+            }
+            
+            if (isInBound(grid, x, y + 1) && !visited[y + 1][x] && grid[y + 1][x] == 1) {
+                Orange south = new Orange();
+                south.x = x;
+                south.y = y + 1;
+                south.time = current.time + 1;
+                queue.offer(south);
+                visited[y + 1][x] = true;
+                grid[y + 1][x] = 2;
+            }
+            
+            if (isInBound(grid, x - 1, y) && !visited[y][x - 1] && grid[y][x - 1] == 1) {
+                Orange west = new Orange();
+                west.x = x - 1;
+                west.y = y;
+                west.time = current.time + 1;
+                queue.offer(west);
+                visited[y][x - 1] = true;
+                grid[y][x - 1] = 2;
+            }
+            
+            if (isInBound(grid, x + 1, y) && !visited[y][x + 1] && grid[y][x + 1] == 1) {
+                Orange east = new Orange();
+                east.x = x + 1;
+                east.y = y;
+                east.time = current.time + 1;
+                queue.offer(east);
+                visited[y][x + 1] = true;
+                grid[y][x + 1] = 2;
+            }
+        }
+        
+        return nbOranges > 0 ? -1 : result;
+    }
+    
+    public boolean isInBound(int[][] grid, int x, int y) {
+        if (y < 0 || y >= grid.length || x < 0 || x >= grid[0].length) return false;
+        return true;
+    }
+    
+    public static class Orange {
+        public int x;
+        public int y;
+        public int time;
+    }
+}
