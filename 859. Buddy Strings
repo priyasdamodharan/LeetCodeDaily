@@ -1,0 +1,61 @@
+https://leetcode.com/problems/buddy-strings/
+
+859. Buddy Strings
+
+Given two strings a and b, return true if you can swap two letters in a so the result is equal to b, otherwise, return false.
+
+Swapping letters is defined as taking two indices i and j (0-indexed) such that i != j and swapping the characters at a[i] and b[j]. For example, swapping at indices 0 and 2 in "abcd" results in "cbad".
+
+ 
+
+Example 1:
+
+Input: a = "ab", b = "ba"
+Output: true
+Explanation: You can swap a[0] = 'a' and a[1] = 'b' to get "ba", which is equal to b.
+Example 2:
+
+Input: a = "ab", b = "ab"
+Output: false
+Explanation: The only letters you can swap are a[0] = 'a' and a[1] = 'b', which results in "ba" != b.
+Example 3:
+
+Input: a = "aa", b = "aa"
+Output: true
+Explanation: You can swap a[0] = 'a' and a[1] = 'a' to get "aa", which is equal to b.
+Example 4:
+
+Input: a = "aaaaaaabc", b = "aaaaaaacb"
+Output: true
+ 
+
+
+class Solution {
+    public boolean buddyStrings(String A, String B) {
+        if (A.length() != B.length()) return false;
+        if (A.equals(B)) {
+            int[] count = new int[26];
+            for (int i = 0; i < A.length(); ++i)
+                count[A.charAt(i) - 'a']++;
+
+            for (int c: count)
+                if (c > 1) return true;
+            return false;
+        } else {
+            int first = -1, second = -1;
+            for (int i = 0; i < A.length(); ++i) {
+                if (A.charAt(i) != B.charAt(i)) {
+                    if (first == -1)
+                        first = i;
+                    else if (second == -1)
+                        second = i;
+                    else
+                        return false;
+                }
+            }
+
+            return (second != -1 && A.charAt(first) == B.charAt(second) &&
+                    A.charAt(second) == B.charAt(first));
+        }
+    }
+}
